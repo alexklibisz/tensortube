@@ -1,0 +1,9 @@
+body {
+  margin-top: 20px;
+}
+
+.navbar-brand {
+  color: white !important;
+  font-weight: bold;
+  font-size: 2em;
+}
