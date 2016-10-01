@@ -40,7 +40,7 @@ def json_handler():
         cached = open(filename, 'r')
         print("Found %s in JSON cache" % (filename))
         resJson = cached.read()
-        print (resJson)
+        # print (resJson)
         resData = json.loads(resJson)
     except:
         print("Didn't find %s in JSON cache: %s" % (filename, str(sys.exc_info())) )
@@ -119,6 +119,8 @@ def pruneLabels(resData, threshold):
         obj["scores"] = scores[:start]
         if len(obj["times"]) == 0:
             del resData["labels"][label]
+
+    resData["sortedLabels"] = sorted(resData["labels"], key=lambda label: max(resData["labels"][label]["scores"]), reverse=True)
 
 if __name__ == '__main__':
   app.run()

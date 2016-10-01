@@ -39,8 +39,6 @@ import os.path
 import re
 import sys
 
-import cv2
-
 import numpy as np
 import tensorflow as tf
 

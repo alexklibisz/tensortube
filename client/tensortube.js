@@ -39,7 +39,9 @@ $(document).ready(function() {
         // Set the video URL
         // User gives: https://www.youtube.com/watch?v=YbcxU1IK7s4
         // Embed frame needs: https://www.youtube.com/embed/YbcxU1IK7s4
-        var videoId = urlFormInput.val().split('=').pop();
+        var url = urlFormInput.val()
+        var videoId = url.split("v=").length == 2 ? url.split("v=").pop() : url.split('/').pop()
+
         var embedURL = 'https://www.youtube.com/embed/' + videoId;
         videoIFrame.attr('src', embedURL);
 
@@ -51,21 +53,28 @@ $(document).ready(function() {
         // Post the request
         axios.post('/video', reqBody)
             .then(function responseHandler(response) {
-                var labels = response.data.labels;
+                var displayLabels;
+                if (response.data.hasOwnProperty('sortedLabels')) {
+                    displayLabels = response.data.sortedLabels.slice(0, 10); // {0 : "label"}
+                }
+                // else {
+                //     displayLabels = response.data.labels; // {"label": {obj}}
+                // }
                 var listItems = [];
-                for(var key in labels) {
+                for(var i in displayLabels) {
+                    label = displayLabels[i]
                     // Create the links for each list item.
-                    var timeLinks = labels[key].times.map(function(time) {
+                    var timeLinks = response.data.labels[label].times.map(function(time) {
                         var hms = secondsToHms(time);
                         return '<a onclick="setVideoTime(' + time + ')" href="javascript:void(0)">' +
                             hms + '</a>';
                     });
                     // Capitalize the first letter.
-                    key = _.upperFirst(key);
+                    label = _.upperFirst(label);
                     // Returns the list item.
-                    listItems.push('<li>' + key + ': ' + timeLinks.join(', ') + '</li>');
+                    listItems.push('<li>' + label + ': ' + timeLinks.join(', ') + '</li>');
                 }
-
+                
                 // Insert the list items.
                 labelsList.html(listItems);
             });
