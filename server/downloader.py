@@ -12,7 +12,10 @@ def extract_files(url):
         yt.set_filename(id)
         #download video of certain quality
         video = yt.get('mp4', '360p')
-        video.download('.')
+	try:
+        	video.download('.')
+	except OSError:
+		pass
 
         frames = []
         cap = cv2.VideoCapture(id+".mp4")
