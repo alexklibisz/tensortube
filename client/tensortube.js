@@ -4,7 +4,7 @@ var urlFormId = '#tt-url-form';
 var urlFormInputId = '#tt-url-form-input';
 var videoIFrameId = '#tt-video-iframe';
 var labelsListId = '#tt-labels-list';
-var initialVideoURL = 'https://www.youtube.com/embed/YbcxU1IK7s4';
+var initialVideoURL = 'https://www.youtube.com/watch?v=YbcxU1IK7s4';
 
 function setVideoTime(seconds) {
   var iframe = $(videoIFrameId);
@@ -37,13 +37,18 @@ $( document ).ready(function() {
       // Don't reload the page.
       event.preventDefault();
 
+      // Set the video URL
+      // User gives: https://www.youtube.com/watch?v=YbcxU1IK7s4
+      // Embed frame needs: https://www.youtube.com/embed/YbcxU1IK7s4
+      var videoId = urlFormInput.val().split('=').pop();
+      var embedURL = 'https://www.youtube.com/embed/' + videoId;
+      videoIFrame.attr('src', embedURL);
+
       // Define the request
       var reqBody = { url: urlFormInput.val() };
 
-      // Set the video.
-      videoIFrame.attr('src', reqBody.url);
-
       // Post the request
+      axios.post('/video', reqBody);
 
       // What we get back from the server.
       var resBody = {

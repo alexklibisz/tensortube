@@ -1,5 +1,6 @@
 import json
 from flask import Flask, request, redirect, url_for, send_from_directory
+import downloader
 
 # Setup Flask app.
 app = Flask(__name__)
@@ -17,8 +18,10 @@ def static_proxy(path):
 
 @app.route('/video', methods=['POST'])
 def json_handler():
-	data = json.loads(request.data)
-	return json.dumps(data)
+	reqData = json.loads(request.data)
+	frames = downloader.extract_files(reqData['url'])
+	print len(frames)
+	return json.dumps(reqData)
 
 if __name__ == '__main__':
   app.run()
