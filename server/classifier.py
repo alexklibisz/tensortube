@@ -202,7 +202,7 @@ def get_top_predictions_jpg_data(image_data, N):
 
 def main(_):
   image = (FLAGS.image_file if FLAGS.image_file else
-           os.path.join(FLAGS.model_dir, 'cropped_panda.jpg'))
+           os.path.join(FLAGS.model_dir, 'fire.jpeg'))
   run_inference_on_image(image)
 
 
