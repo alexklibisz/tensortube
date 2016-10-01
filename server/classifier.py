@@ -136,7 +136,6 @@ def create_graph():
     graph_def.ParseFromString(f.read())
     _ = tf.import_graph_def(graph_def, name='')
 
-
 def run_inference_on_image(image):
   """Runs inference on an image.
 
@@ -150,7 +149,6 @@ def run_inference_on_image(image):
 
   # Creates node ID --> English string lookup.
   node_lookup = NodeLookup()
-  print (top_predictions)
   for node_id in top_predictions:
     human_string = node_lookup.id_to_string(node_id)
     score = all_predictions[node_id]
@@ -181,8 +179,6 @@ def get_top_predictions_jpg_data(image_data, N):
   Returns:
     the top N prediction node ids and the list of all predictions
   """
-  # Creates graph from saved GraphDef.
-  create_graph()
 
   with tf.Session() as sess:
     # Some useful tensors:
@@ -198,9 +194,12 @@ def get_top_predictions_jpg_data(image_data, N):
                            {'DecodeJpeg/contents:0': image_data})
     predictions = np.squeeze(predictions)
     top_k = predictions.argsort()[-N:][::-1]
+
     return top_k, predictions
 
 def main(_):
+  # Creates graph from saved GraphDef.
+  create_graph()
   image = (FLAGS.image_file if FLAGS.image_file else
            os.path.join(FLAGS.model_dir, 'fire.jpeg'))
   run_inference_on_image(image)
