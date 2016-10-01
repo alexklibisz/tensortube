@@ -33,6 +33,7 @@ def json_handler():
     print (reqData['url'])
     frames = downloader.extract_files(reqData['url'])
     print ("%d frames" % (len(frames)))
+    resData = {"labels" : {}}
     for t, f in enumerate(frames):
         if t > 5:
             break
@@ -42,21 +43,25 @@ def json_handler():
         for node_id in top_predictions:
             human_string = node_lookup.id_to_string(node_id)
             score = all_predictions[node_id]
+
+            # Add to response data if above a certain threshold
+            if score > 0.4:
+                if human_string not in resData["labels"]:
+                    resData["labels"][human_string] = {"times" : []}
+                resData["labels"][human_string]["times"].append(t)
             print('frame %d %s (score = %.5f)' % (t, human_string, score))
 
     # Response data should be formatted like this.
-    resData = {
-        "labels": [
-            {
-                "name": "cat",
-                "times": [40,50,60,70]
-            },
-            {
-                "name": "dog",
-                "times": [120,130,140]
-            }
-        ]
-    }
+    # resData = {
+    #     "labels": {
+    #         "cat" : {
+    #             "times": [40,50,60,70]
+    #         },
+    #         "dog" : {
+    #             "times": [120,130,140]
+    #         }
+    #     }
+    # }
     print(resData)
     return(json.dumps(resData))
 

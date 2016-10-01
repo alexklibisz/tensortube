@@ -52,19 +52,19 @@ $(document).ready(function() {
         axios.post('/video', reqBody)
             .then(function responseHandler(response) {
                 var labels = response.data.labels;
-                // Create the list item for each label.
-                var listItems = labels.map(function(label) {
+                var listItems = [];
+                for(var key in labels) {
                     // Create the links for each list item.
-                    var timeLinks = label.times.map(function(time) {
+                    var timeLinks = labels[key].times.map(function(time) {
                         var hms = secondsToHms(time);
                         return '<a onclick="setVideoTime(' + time + ')" href="javascript:void(0)">' +
                             hms + '</a>';
                     });
                     // Capitalize the first letter.
-                    label.name = _.upperFirst(label.name);
+                    key = _.upperFirst(key);
                     // Returns the list item.
-                    return '<li>' + label.name + ': ' + timeLinks.join(', ') + '</li>';
-                });
+                    listItems.push('<li>' + key + ': ' + timeLinks.join(', ') + '</li>');
+                }
 
                 // Insert the list items.
                 labelsList.html(listItems);
