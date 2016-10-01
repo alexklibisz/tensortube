@@ -1,0 +1,135 @@
+# Copyright 2014 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"). You
+# may not use this file except in compliance with the License. A copy of
+# the License is located at
+#
+# http://aws.amazon.com/apache2.0/
+#
+# or in the "license" file accompanying this file. This file is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
+# ANY KIND, either express or implied. See the License for the specific
+# language governing permissions and limitations under the License.
+
+from ..core.abstractcontroller import AbstractBaseController
+from ..resources.strings import strings, flag_text, prompts
+from ..core import io
+from ..operations import commonops, cloneops
+from ..lib import utils, elasticbeanstalk
+from ..controllers.create import get_cname, get_and_validate_tags, \
+    get_and_validate_envars
+from ..objects.exceptions import InvalidOptionsError, AlreadyExistsError
+from ..objects.requests import CloneEnvironmentRequest
+
+
+class CloneController(AbstractBaseController):
+    class Meta(AbstractBaseController.Meta):
+        label = 'clone'
+        description = strings['clone.info']
+        arguments = [
+            (['environment_name'], dict(action='store', nargs='?',
+                                            help=flag_text['clone.env'])),
+            (['-n', '--clone_name'], dict(help=flag_text['clone.name'])),
+            (['-c', '--cname'], dict(help=flag_text['clone.cname'])),
+            (['--scale'], dict(type=int, help=flag_text['clone.scale'])),
+            (['--tags'], dict(help=flag_text['clone.tags'])),
+            (['--envvars'], dict(help=flag_text['create.envvars'])),
+            (['-nh', '--nohang'], dict(action='store_true',
+                                       help=flag_text['clone.nohang'])),
+            (['--timeout'], dict(type=int, help=flag_text['general.timeout'])),
+            (['--exact'], dict(action='store_true',
+                                help=flag_text['clone.exact'])),
+        ]
+        usage = 'eb clone <environment_name> (-n CLONE_NAME) [options ...]'
+
+    def do_command(self):
+        app_name = self.get_app_name()
+        env_name = self.get_env_name()
+        clone_name = self.app.pargs.clone_name
+        cname = self.app.pargs.cname
+        scale = self.app.pargs.scale
+        nohang = self.app.pargs.nohang
+        tags = self.app.pargs.tags
+        envvars = self.app.pargs.envvars
+        exact = self.app.pargs.exact
+        timeout = self.app.pargs.timeout
+        provided_clone_name = clone_name is not None
+        platform = None
+
+        # Get original environment
+        env = elasticbeanstalk.get_environment(app_name, env_name)
+
+        # Get tier of original environment
+        tier = env.tier
+        if 'worker' in tier.name.lower() and cname:
+            raise InvalidOptionsError(strings['worker.cname'])
+
+        if cname:
+            if not commonops.is_cname_available(cname):
+                raise AlreadyExistsError(strings['cname.unavailable'].
+                                         replace('{cname}', cname))
+
+        # get tags
+        tags = get_and_validate_tags(tags)
+        envvars = get_and_validate_envars(envvars)
+
+        # Get env_name for clone
+        if not clone_name:
+            if len(env_name) < 16:
+                unique_name = env_name + '-clone'
+            else:
+                unique_name = 'my-cloned-env'
+
+            env_list = commonops.get_env_names(app_name)
+
+            unique_name = utils.get_unique_name(unique_name, env_list)
+
+            clone_name = io.prompt_for_environment_name(
+                default_name=unique_name,
+                prompt_text='Enter name for Environment Clone'
+            )
+
+        if tier.name.lower() == 'webserver':
+            if not cname and not provided_clone_name:
+                cname = get_cname(clone_name)
+            elif not cname:
+                cname = None
+
+        if not exact:
+            if not provided_clone_name:  # interactive mode
+                latest = commonops.get_latest_solution_stack(
+                    env.platform.version)
+                if latest != env.platform:
+                    # ask for latest or exact
+                    io.echo()
+                    io.echo(prompts['clone.latest'])
+                    lst = ['Latest  (' + str(latest) + ')',
+                           'Same    (' + str(env.platform) + ')']
+                    result = utils.prompt_for_item_in_list(lst)
+                    if result == lst[0]:
+                        platform = latest
+            else:
+                # assume latest - get original platform
+                platform = commonops.get_latest_solution_stack(
+                    env.platform.version)
+                if platform != env.platform:
+                    io.log_warning(prompts['clone.latestwarn'])
+
+
+        clone_request = CloneEnvironmentRequest(
+            app_name=app_name,
+            env_name=clone_name,
+            original_name=env_name,
+            cname=cname,
+            platform=platform,
+            scale=scale,
+            tags=tags,
+        )
+
+        clone_request.option_settings += envvars
+
+        cloneops.make_cloned_env(clone_request, nohang=nohang,
+                                   timeout=timeout)
+
+    def complete_command(self, commands):
+        super(CloneController, self).complete_command(commands)

@@ -1,4 +1,5 @@
 **/*.pyc
 server/__pycache__/*
-server/videos/*
+server/videos/*.mp4
 !server/videos/.keep
+logging.out
