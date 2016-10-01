@@ -3,13 +3,16 @@ from pytube import YouTube
 import math
 import cv2
 
+def get_youtube_id(url):
+    return url.split("v=")[-1] if len(url.split("v=")) == 2 else url.rsplit('/', 1)[-1]
+
 #this function downloads a video by url
 #and uses openCV to return its image array
 def extract_files(url):
     videoFolder = './server/videos'
     # Set filename to id
     yt = YouTube(url)
-    id = url.split("v=")[-1] if len(url.split("v=")) == 2 else url.rsplit('/', 1)[-1]
+    id = get_youtube_id(url)
     yt.set_filename(id)
     #download video of certain quality
     video = yt.get('mp4', '360p')
