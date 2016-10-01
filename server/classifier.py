@@ -72,7 +72,7 @@ class NodeLookup(object):
     if not uid_lookup_path:
       uid_lookup_path = os.path.join(
           FLAGS.model_dir, 'imagenet_synset_to_human_label_map.txt')
-    self.node_lookup = self.load(label_lookup_path, uid_lookup_path)
+    self.node_id_lookup = self.load(label_lookup_path, uid_lookup_path)
 
   def load(self, label_lookup_path, uid_lookup_path):
     """Loads a human readable English name for each softmax node.
@@ -99,6 +99,11 @@ class NodeLookup(object):
       human_string = parsed_items[2]
       uid_to_human[uid] = human_string
 
+    # Map human string to string UID
+    self.node_human_lookup = {}
+    for uid, human in uid_to_human.items():
+      self.node_human_lookup[human] = uid
+
     # Loads mapping from string UID to integer node ID.
     node_id_to_uid = {}
     proto_as_ascii = tf.gfile.GFile(label_lookup_path).readlines()
@@ -120,10 +125,14 @@ class NodeLookup(object):
     return node_id_to_name
 
   def id_to_string(self, node_id):
-    if node_id not in self.node_lookup:
+    if node_id not in self.node_id_lookup:
       return ''
-    return self.node_lookup[node_id]
+    return self.node_id_lookup[node_id]
 
+  def string_to_id(self, node_string):
+    if node_string not in self.node_human_lookup:
+      return ''
+    return self.node_human_lookup[node_string]
 
 def create_graph():
   """Creates a graph from saved GraphDef file and returns a saver."""

@@ -57,14 +57,18 @@ $(document).ready(function() {
                 if (response.data.hasOwnProperty('sortedLabels')) {
                     displayLabels = response.data.sortedLabels.slice(0, 10); // {0 : "label"}
                 }
-                // else {
-                //     displayLabels = response.data.labels; // {"label": {obj}}
-                // }
+                else {
+                    alert("Response wasn't good");
+                    console.log(response.data);
+                }
                 var listItems = [];
+                var label;
+                var info;
                 for(var i in displayLabels) {
-                    label = displayLabels[i]
+                    label = displayLabels[i];
+                    info = response.data.labels[label];
                     // Create the links for each list item.
-                    var timeLinks = response.data.labels[label].times.map(function(time) {
+                    var timeLinks = info.times.map(function(time) {
                         var hms = secondsToHms(time);
                         return '<a onclick="setVideoTime(' + time + ')" href="javascript:void(0)">' +
                             hms + '</a>';
@@ -72,7 +76,8 @@ $(document).ready(function() {
                     // Capitalize the first letter.
                     label = _.upperFirst(label);
                     // Returns the list item.
-                    listItems.push('<li>' + label + ': ' + timeLinks.join(', ') + '</li>');
+                    var labelLink = '<a href="http://imagenet.stanford.edu/synset?wnid=' + info.labelId + '">' + label + '</a>';
+                    listItems.push('<li>' + labelLink + ': ' + timeLinks.join(', ') + '</li>');
                 }
                 
                 // Insert the list items.

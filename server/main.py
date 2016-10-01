@@ -60,7 +60,9 @@ def json_handler():
 
                 # Add to response data if above a certain threshold
                 if human_string not in resData["labels"]:
-                    resData["labels"][human_string] = {"times" : [], "scores" : []}
+                    resData["labels"][human_string] = {"times" : [], 
+                                                        "scores" : [],
+                                                        "labelId" : node_id}
                 resData["labels"][human_string]["times"].append(t)
                 resData["labels"][human_string]["scores"].append(score)
                 print('frame %d %s (score = %.5f)' % (t, human_string, score))
@@ -69,10 +71,12 @@ def json_handler():
         # resData = {
         #     "labels": {
         #         "cat" : {
+        #             "labelId" : "n02121620",
         #             "times": [40,50,60,70],
         #             "scores" : [0.8, 0.3, 0.4, 0.9]
         #         },
         #         "dog" : {
+        #             "labelId" : "n03218446",
         #             "times": [120,130,140]
         #             "scores" : [0.8, 0.3, 0.4]
         #         }
@@ -101,6 +105,20 @@ def json_handler():
         resJson = json.dumps(resData)
         cached = open(filename, 'w')
         cached.write(resJson)
+    else:
+        # See if this cached file has the labelId attribute
+        for label, info in resData["labels"].items():
+            good = "labelId" in info
+            break
+        if not good:
+            for label, info in resData["labels"].items():
+                info["labelId"] = node_lookup.string_to_id(label)
+            # Write to cache
+            print("Adding nodeIds to cached data")
+            print(resData)
+            resJson = json.dumps(resData)
+            cached = open(filename, 'w')
+            cached.write(resJson)
     pruneLabels(resData, 0.4)
     return json.dumps(resData)
 
