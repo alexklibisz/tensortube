@@ -164,12 +164,23 @@ def get_top_predictions(image, N):
     N: number of guesses to return
 
   Returns:
-    Nothing
+    the top N prediction node ids and the list of all predictions
   """
   if not tf.gfile.Exists(image):
     tf.logging.fatal('File does not exist %s', image)
   image_data = tf.gfile.FastGFile(image, 'rb').read()
-  
+  return get_top_predictions_jpg_data(image_data, N)
+
+def get_top_predictions_jpg_data(image_data, N):
+  """Runs inference on an image and returns the top N guess
+
+  Args:
+    image: Image file name.
+    N: number of guesses to return
+
+  Returns:
+    the top N prediction node ids and the list of all predictions
+  """
   # Creates graph from saved GraphDef.
   create_graph()
 
@@ -191,7 +202,7 @@ def get_top_predictions(image, N):
 
 def main(_):
   image = (FLAGS.image_file if FLAGS.image_file else
-           os.path.join(FLAGS.model_dir, 'cropped_panda.jpg'))
+           os.path.join(FLAGS.model_dir, 'fire.jpeg'))
   run_inference_on_image(image)
 
 
