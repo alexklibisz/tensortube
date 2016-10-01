@@ -13,12 +13,12 @@ def extract_files(url):
         #download video of certain quality
         video = yt.get('mp4', '360p')
 	try:
-        	video.download('.')
+        	video.download('./videos/')
 	except OSError:
 		pass
 
         frames = []
-        cap = cv2.VideoCapture(id+".mp4")
+        cap = cv2.VideoCapture("./videos/"+id+".mp4")
         frameRate = cap.get(5) #frame rate
         while(cap.isOpened()):
                 frameId = cap.get(1) #current frame number
