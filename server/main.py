@@ -1,17 +1,19 @@
+#!/usr/bin/env python2.7
 from __future__ import print_function
 import json
 from flask import Flask, request, redirect, url_for, send_from_directory
 import downloader
 import classifier
+import cv2
 
 # Setup Flask app.
 app = Flask(__name__)
 app.debug = True
 app._static_folder = '../client'
 
+
 # Setup classifier.
 # Creates classification network and node ID --> English string lookup.
-classifier.create_graph()
 node_lookup = classifier.NodeLookup()
 
 # Routes
@@ -25,19 +27,22 @@ def static_proxy(path):
 
 @app.route('/video', methods=['POST'])
 def json_handler():
+
+    classifier.create_graph()
     reqData = json.loads(request.data)
+    print (reqData['url'])
     frames = downloader.extract_files(reqData['url'])
-    i = 0
-    print (len(frames))
-    for f in frames:
+    print ("%d frames" % (len(frames)))
+    for t, f in enumerate(frames):
+        if t > 5:
+            break
         img_str = cv2.imencode('.jpg', f)[1].tostring()
         top_predictions, all_predictions = classifier.get_top_predictions_jpg_data(img_str, 1)
 
         for node_id in top_predictions:
             human_string = node_lookup.id_to_string(node_id)
             score = all_predictions[node_id]
-            print('frame %d %s (score = %.5f)' % (i, human_string, score))
-            i = i + 1
+            print('frame %d %s (score = %.5f)' % (t, human_string, score))
 
     # Response data should be formatted like this.
     resData = {
