@@ -3,10 +3,10 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Bootswatch: Simplex</title>
+  <title>TensorTube</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/slate/bootstrap.min.css" media="screen">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/yeti/bootstrap.min.css" media="screen">
   <link rel="stylesheet" href="tensortube.css" media="screen" title="no title" charset="utf-8">
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
@@ -40,16 +40,22 @@
     </nav>
 
     <div class="row">
+      <div class="col-md-12" style="margin-bottom: 20px; font-weight: bolder">
+        <h2>Use Tensorflow to classify and jump to frames from any Youtube video.</h2>
+      </div>
+    </div>
 
-      <div class="col-md-8">
+    <div class="row">
+
+      <div class="col-md-7">
 
         <div class="tt-url-container">
 
-          <form class="" action="index.html" method="post">
+          <form id="tt-url-form">
             <div class="input-group">
-              <input type="text" class="form-control" placeholder="Enter Youtube URL">
+              <input id="tt-url-form-input" type="text" class="form-control" placeholder="Enter Youtube URL">
               <span class="input-group-btn">
-                <button class="btn btn-default" type="button">Go!</button>
+                <button class="btn btn-default" type="submit">Go!</button>
               </span>
             </div>
           </form>
@@ -57,15 +63,17 @@
         </div>
 
         <div class="tt-video-container">
-          <iframe width="560" height="315" src="https://www.youtube.com/embed/YbcxU1IK7s4" frameborder="0" allowfullscreen></iframe>
+          <iframe id="tt-video-iframe" width="560" height="315" src="" frameborder="0" allowfullscreen></iframe>
         </div>
 
       </div>
 
-      <div class="col-md-4">
-
+      <div class="col-md-5">
+        <h2 style="margin-top: 0px">Video Labels</h2>
         <div class="tt-labels-container">
-          Labels here
+          <ul id="tt-labels-list">
+            <!-- Labels will go here -->
+          </ul>
         </div>
 
       </div>
@@ -74,15 +82,14 @@
 
     <!-- Footer -->
     <footer>
-      <p>
-        Footer
-      </p>
+      <p></p>
     </footer>
   </div>
   <!-- /container -->
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.16.2/lodash.min.js"></script>
   <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="tensortube.js"></script>
 </body>
 
 </html>

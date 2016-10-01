@@ -7,3 +7,12 @@ body {
   font-weight: bold;
   font-size: 2em;
 }
+
+.tt-video-container {
+  padding-top: 20px;
+}
+
+.tt-labels-container {
+  max-height: 40vh;
+  overflow-y: scroll;
+}
