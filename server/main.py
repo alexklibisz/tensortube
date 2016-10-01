@@ -5,6 +5,8 @@ from flask import Flask, request, redirect, url_for, send_from_directory
 import downloader
 import classifier
 import cv2
+import numpy as np
+import sys
 
 # Setup Flask app.
 app = Flask(__name__)
@@ -33,68 +35,90 @@ def json_handler():
     reqData = json.loads(request.data)
 
     filename = videoFolder + "/" + downloader.get_youtube_id(reqData['url']) + ".json"
-    print (filename) #filename = "./server/videos/YbcxU1IK7s4.json"
+    print (filename)
     try:
         cached = open(filename, 'r')
         print("Found %s in JSON cache" % (filename))
-        return cached.read()
+        resJson = cached.read()
+        print (resJson)
+        resData = json.loads(resJson)
     except:
-        print("Didn't find %s in JSON cache" % (filename))
-        pass
+        print("Didn't find %s in JSON cache: %s" % (filename, str(sys.exc_info())) )
+        print (reqData['url'])
+        frames = downloader.extract_files(reqData['url'])
+        print ("%d frame%s" % (len(frames), 's' if len(frames) > 1 else ''))
 
-    print (reqData['url'])
-    frames = downloader.extract_files(reqData['url'])
-    print ("%d frame%s" % (len(frames), 's' if len(frames) > 1 else ''))
+        resData = {"labels" : {}}
+        # Add important frames to resData
+        for t, f in enumerate(frames):
+            img_str = cv2.imencode('.jpg', f)[1].tostring()
+            top_predictions, all_predictions = classifier.get_top_predictions_jpg_data(img_str, 1)
 
-    resData = {"labels" : {}}
-    # Add important frames to resData
-    for t, f in enumerate(frames):
-        img_str = cv2.imencode('.jpg', f)[1].tostring()
-        top_predictions, all_predictions = classifier.get_top_predictions_jpg_data(img_str, 1)
+            for node_id in top_predictions:
+                human_string = node_lookup.id_to_string(node_id)
+                score = np.asscalar(all_predictions[node_id])
 
-        for node_id in top_predictions:
-            human_string = node_lookup.id_to_string(node_id)
-            score = all_predictions[node_id]
-
-            # Add to response data if above a certain threshold
-            if score > 0.4:
+                # Add to response data if above a certain threshold
                 if human_string not in resData["labels"]:
-                    resData["labels"][human_string] = {"times" : []}
+                    resData["labels"][human_string] = {"times" : [], "scores" : []}
                 resData["labels"][human_string]["times"].append(t)
-            print('frame %d %s (score = %.5f)' % (t, human_string, score))
-    
-    # Response data should be formatted like this.
-    # resData = {
-    #     "labels": {
-    #         "cat" : {
-    #             "times": [40,50,60,70],
-    #             "scores" : [0.8, 0.3, 0.4, 0.9]
-    #         },
-    #         "dog" : {
-    #             "times": [120,130,140]
-    #             "scores" : [0.8, 0.3, 0.4]
-    #         }
-    #     }
-    # }
+                resData["labels"][human_string]["scores"].append(score)
+                print('frame %d %s (score = %.5f)' % (t, human_string, score))
+        
+        # Response data should be formatted like this.
+        # resData = {
+        #     "labels": {
+        #         "cat" : {
+        #             "times": [40,50,60,70],
+        #             "scores" : [0.8, 0.3, 0.4, 0.9]
+        #         },
+        #         "dog" : {
+        #             "times": [120,130,140]
+        #             "scores" : [0.8, 0.3, 0.4]
+        #         }
+        #     }
+        # }
 
 
-    # Remove any consecutive label times
+        # Remove any consecutive label times
+        for label, obj in resData["labels"].items():
+            start = 1
+            times = obj["times"]
+            scores = obj["scores"]
+            for i in range(1, len(times), 1):
+                if times[i] - times[i-1] > 1:
+                    times[start] = times[i]
+                    scores[start] = scores[i]
+                    start = start + 1
+                else:
+                    # stick the higher value into the one we're keeping for this label
+                    if scores[i] > scores[start-1]:
+                        scores[start-1] = scores[i]
+            obj["times"] = times[:start]
+            obj["scores"] = scores[:start]
+
+        print(resData)
+        resJson = json.dumps(resData)
+        cached = open(filename, 'w')
+        cached.write(resJson)
+    pruneLabels(resData, 0.4)
+    return json.dumps(resData)
+
+# Removes all entries with a score lower than the the given threshold
+def pruneLabels(resData, threshold):
     for label, obj in resData["labels"].items():
-        start = 1
+        start = 0
         times = obj["times"]
-        for i in range(1, len(times), 1):
-            if times[i] - times[i-1] > 1:
+        scores = obj["scores"]
+        for i in range(len(times)):
+            if scores[i] >= threshold:
                 times[start] = times[i]
+                scores[start] = scores[i]
                 start = start + 1
         obj["times"] = times[:start]
-
-    print(resData)
-    resJson = json.dumps(resData)
-    cached = open(filename, 'w')
-    cached.write(resJson)
-    return resJson
-
-
+        obj["scores"] = scores[:start]
+        if len(obj["times"]) == 0:
+            del resData["labels"][label]
 
 if __name__ == '__main__':
   app.run()
