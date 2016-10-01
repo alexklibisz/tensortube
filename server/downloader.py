@@ -14,7 +14,7 @@ def extract_files(url):
     video = yt.get('mp4', '360p')
     try:
     	video.download('./videos/')
-        print "done"
+        print("done")
     except OSError:
         pass
 
