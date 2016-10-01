@@ -18,10 +18,24 @@ def static_proxy(path):
 
 @app.route('/video', methods=['POST'])
 def json_handler():
-	reqData = json.loads(request.data)
-	frames = downloader.extract_files(reqData['url'])
-	print len(frames)
-	return json.dumps(reqData)
+    reqData = json.loads(request.data)
+    # frames = downloader.extract_files(reqData['url'])
+
+    # Response data should be formatted like this.
+    resData = {
+        "labels": [
+            {
+                "name": "cat",
+                "times": [40,50,60,70]
+            },
+            {
+                "name": "dog",
+                "times": [120,130,140]
+            }
+        ]
+    }
+    print(resData)
+    return(json.dumps(resData))
 
 if __name__ == '__main__':
   app.run()
