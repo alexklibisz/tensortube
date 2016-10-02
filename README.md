@@ -52,6 +52,11 @@ After that you should be able to run the `server/main.py` script and open up the
 
 9. View server logs at `/var/log/apache2/*.log`
 
+## TODO
+
+- Figure out a memory leak with the server (it crashes sporatically with a Memory Error).
+- Limit the duration of video that can be submitted with clear error message.
+
 ***
 
 ## Virtual Environment (Non-working)
