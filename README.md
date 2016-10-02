@@ -27,15 +27,18 @@ We tried doing a neat virtual environment, but it wouldn't play nicely with mons
 5. Clone the app into the `/home/ubuntu` home directory.
 > $ git clone https://github.com/alexklibisz/tensortube.git
 
-6. Copy the apache config to the config folder.
+6. Install the python libraries as user-level dependencies.
+> $ ./install-packages.py
+
+7. Copy the apache config to the config folder.
 > $ sudo cp tensortube.conf /etc/apache2/sites-available
 
-7. Disable the default site, enable the tensortube site, restart apache.
+8. Disable the default site, enable the tensortube site, restart apache.
 > $ sudo a2dissite 000-default.config
 > $ sudo a2ensite tensortube.conf
 > $ sudo service apache restart
 
-8. View server logs at `/var/log/apache2/*.log`
+9. View server logs at `/var/log/apache2/*.log`
 
 ***
 
