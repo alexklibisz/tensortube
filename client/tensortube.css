@@ -16,3 +16,10 @@ body {
   max-height: 40vh;
   overflow-y: scroll;
 }
+
+.labelLink {
+	font-weight: bold;
+}
+
+.timeLink {
+}

@@ -70,13 +70,13 @@ $(document).ready(function() {
                     // Create the links for each list item.
                     var timeLinks = info.times.map(function(time) {
                         var hms = secondsToHms(time);
-                        return '<a onclick="setVideoTime(' + time + ')" href="javascript:void(0)">' +
+                        return '<a class="timeLink badge" onclick="setVideoTime(' + time + ')" href="javascript:void(0)">' +
                             hms + '</a>';
                     });
                     // Capitalize the first letter.
                     label = _.upperFirst(label);
                     // Returns the list item.
-                    var labelLink = '<a href="http://imagenet.stanford.edu/synset?wnid=' + info.labelId + '">' + label + '</a>';
+                    var labelLink = '<a class="labelLink" href="http://imagenet.stanford.edu/synset?wnid=' + info.labelId + '">' + label + '</a>';
                     listItems.push('<li>' + labelLink + ': ' + timeLinks.join(', ') + '</li>');
                 }
                 

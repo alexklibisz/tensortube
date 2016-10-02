@@ -62,7 +62,7 @@ def json_handler():
                 if human_string not in resData["labels"]:
                     resData["labels"][human_string] = {"times" : [], 
                                                         "scores" : [],
-                                                        "labelId" : node_id}
+                                                        "labelId" : node_lookup.string_to_id(human_string)}
                 resData["labels"][human_string]["times"].append(t)
                 resData["labels"][human_string]["scores"].append(score)
                 print('frame %d %s (score = %.5f)' % (t, human_string, score))
