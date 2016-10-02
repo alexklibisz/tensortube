@@ -13,12 +13,27 @@ body {
 }
 
 .tt-labels-container {
-  max-height: 40vh;
+  height: 400px;
+  max-height: 400px;
   overflow-y: scroll;
 }
 
+#tt-labels-list li {
+  line-height: 1.5;
+  margin-bottom: 5px;
+}
+
+#tt-available-list {
+    margin-top: 20px;
+}
+
+#tt-available-list div {
+    text-align: center;
+    padding: 5px;
+}
+
 .labelLink {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 .timeLink {
