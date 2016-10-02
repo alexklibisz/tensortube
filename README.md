@@ -20,15 +20,24 @@ We tried doing a neat virtual environment, but it wouldn't play nicely with mons
 
 1. Buy a domain name on namecheap.
 2. Launch an ubuntu 14.04 ec2 on AWS and ssh into it.
-3. Install Apache and git on the server.
-> $ sudo apt-get install apache2
+3. Install Apache, the apache wsgi module, and git on the server.
+> $ sudo apt-get install apache2 libapache2-mod-wsgi git
 
 4. [Use this as a reference for getting the domain to point to the server.](http://techgenix.com/namecheap-aws-ec2-linux/)
 5. Clone the app into the `/home/ubuntu` home directory.
 > $ git clone https://github.com/alexklibisz/tensortube.git
 
+6. Copy the apache config to the config folder.
+> $ sudo cp tensortube.conf /etc/apache2/sites-available
 
+7. Disable the default site, enable the tensortube site, restart apache.
+> $ sudo a2dissite 000-default.config
+> $ sudo a2ensite tensortube.conf
+> $ sudo service apache restart
 
+8. View server logs at `/var/log/apache2/*.log`
+
+***
 
 ## Virtual Environment (Non-working)
 
