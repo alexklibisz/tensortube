@@ -41,7 +41,6 @@ def cached_handler():
 @app.route('/video', methods=['POST'])
 def json_handler():
 
-    classifier.create_graph()
     reqData = json.loads(request.data)
     youtube_id = downloader.get_youtube_id(reqData['url'])
     filename = videoFolder + "/" + youtube_id + ".json"
@@ -59,6 +58,8 @@ def json_handler():
         print ("%d frame%s" % (len(frames), 's' if len(frames) > 1 else ''))
 
         resData = {"labels" : {}}
+
+        classifier.create_graph()
         # Add important frames to resData
         for t, f in enumerate(frames):
             img_str = cv2.imencode('.jpg', f)[1].tostring()
