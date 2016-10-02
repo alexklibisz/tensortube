@@ -9,6 +9,7 @@ import numpy as np
 import sys
 import os
 import glob
+import random
 
 # Setup Flask app.
 app = Flask(__name__)
@@ -30,13 +31,12 @@ def root():
 def static_proxy(path):
   return app.send_static_file(path)
 
-
 @app.route('/cached', methods=['GET'])
 def cached_handler():
     resData = []
     for file in glob.glob(videoFolder + "/*.json"):
         resData.append(file.rsplit('.', 1)[0].rsplit('/', 1)[-1])
-    return json.dumps(resData)
+    return json.dumps(random.sample(resData, min(len(resData), 10)))
 
 @app.route('/video', methods=['POST'])
 def json_handler():
