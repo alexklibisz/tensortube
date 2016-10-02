@@ -121,9 +121,9 @@ def json_handler():
             good = ("labelId" in info) and isinstance(info["labelId"], basestring)
             break
         if not good:
+            resData["youtubeId"] = youtube_id
             for label, info in resData["labels"].items():
                 info["labelId"] = node_lookup.string_to_id(label)
-                info["youtubeId"] = youtube_id
             # Write to cache
             print("Adding nodeIds to cached data")
             print(resData)

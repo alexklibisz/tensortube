@@ -52,6 +52,7 @@ $(document).ready(function() {
 
     // Set up submit Handler
     urlForm.submit(function urlFormSubmit(event) {
+        labelsList.html('<p>Loading</p>')
 
         // Don't reload the page.
         event.preventDefault();
@@ -96,7 +97,7 @@ $(document).ready(function() {
                     // Capitalize the first letter.
                     label = _.upperFirst(label);
                     // Returns the list item.
-                    var labelLink = '<a class="labelLink" href="http://imagenet.stanford.edu/synset?wnid=' + info.labelId + '">' + label + '</a>';
+                    var labelLink = '<a class="labelLink" target="_blank" href="http://imagenet.stanford.edu/synset?wnid=' + info.labelId + '">' + label + '</a>';
                     listItems.push('<li>' + labelLink + ': ' + timeLinks.join(', ') + '</li>');
                 }
                 
