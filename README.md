@@ -13,12 +13,21 @@ Volhacks 2016 Project
 
 We tried doing a neat virtual environment, but it wouldn't play nicely with monsters like opencv and tensorflow. So you'll need to run the script install-packages.sh.
 
-> $ sudo apt-get install pip # Install pip if you don't have it.
+> $ wget https://bootstrap.pypa.io/get-pip.py && sudo python2.7 get-pip.py
 > $ ./install-packages.sh
 
-## Hosting
+## Deployment
 
-- [This was a nice reference for setting up the AWS/Namecheap domain name.](http://techgenix.com/namecheap-aws-ec2-linux/)
+1. Buy a domain name on namecheap.
+2. Launch an ubuntu 14.04 ec2 on AWS and ssh into it.
+3. Install Apache and git on the server.
+> $ sudo apt-get install apache2
+
+4. [Use this as a reference for getting the domain to point to the server.](http://techgenix.com/namecheap-aws-ec2-linux/)
+5. Clone the app into the `/home/ubuntu` home directory.
+> $ git clone https://github.com/alexklibisz/tensortube.git
+
+
 
 
 ## Virtual Environment (Non-working)
