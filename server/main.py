@@ -36,7 +36,7 @@ def cached_handler():
     resData = []
     for file in glob.glob(videoFolder + "/*.json"):
         resData.append(file.rsplit('.', 1)[0].rsplit('/', 1)[-1])
-    return json.dumps(random.sample(resData, min(len(resData), 10)))
+    return json.dumps(random.sample(resData, min(len(resData), 12)))
 
 @app.route('/video', methods=['POST'])
 def json_handler():
