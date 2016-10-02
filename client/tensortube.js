@@ -52,7 +52,7 @@ $(document).ready(function() {
 
     // Set up submit Handler
     urlForm.submit(function urlFormSubmit(event) {
-        labelsList.html('<p>Loading</p>')
+        labelsList.html('<p>Loading, this may take some time depending on the video length.</p>')
 
         // Don't reload the page.
         event.preventDefault();
