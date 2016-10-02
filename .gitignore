@@ -4,3 +4,4 @@ server/videos/*.mp4
 !server/videos/.keep
 logging.out
 venv
+get-pip.py
