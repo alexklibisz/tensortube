@@ -7,6 +7,8 @@ import classifier
 import cv2
 import numpy as np
 import sys
+import os
+import glob
 
 # Setup Flask app.
 app = Flask(__name__)
@@ -28,13 +30,21 @@ def root():
 def static_proxy(path):
   return app.send_static_file(path)
 
+
+@app.route('/cached', methods=['GET'])
+def cached_handler():
+    resData = []
+    for file in glob.glob(videoFolder + "/*.json"):
+        resData.append(file.rsplit('.', 1)[0].rsplit('/', 1)[-1])
+    return json.dumps(resData)
+
 @app.route('/video', methods=['POST'])
 def json_handler():
 
     classifier.create_graph()
     reqData = json.loads(request.data)
-
-    filename = videoFolder + "/" + downloader.get_youtube_id(reqData['url']) + ".json"
+    youtube_id = downloader.get_youtube_id(reqData['url'])
+    filename = videoFolder + "/" + youtube_id + ".json"
     print (filename)
     try:
         cached = open(filename, 'r')
@@ -108,11 +118,12 @@ def json_handler():
     else:
         # See if this cached file has the labelId attribute
         for label, info in resData["labels"].items():
-            good = "labelId" in info
+            good = ("labelId" in info) and isinstance(info["labelId"], basestring)
             break
         if not good:
             for label, info in resData["labels"].items():
                 info["labelId"] = node_lookup.string_to_id(label)
+                info["youtubeId"] = youtube_id
             # Write to cache
             print("Adding nodeIds to cached data")
             print(resData)
