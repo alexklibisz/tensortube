@@ -2,6 +2,7 @@
 from pytube import YouTube
 import math
 import cv2
+import imageio
 
 def get_youtube_id(url):
     return url.split("v=")[-1] if len(url.split("v=")) == 2 else url.rsplit('/', 1)[-1]
@@ -24,15 +25,27 @@ def extract_files(url):
         pass
 
     frames = []
-    cap = cv2.VideoCapture(videoFolder + "/"+id+".mp4")
-    frameRate = cap.get(5) #frame rate
-    while(cap.isOpened()):
-        frameId = cap.get(1) #current frame number
-        ret, frame = cap.read()
-        if (ret != True):
-            break
-        if (frameId % math.floor(frameRate) == 0):
-            frames.append(frame)
-    cap.release()
+    fname = "%s/%s.mp4" % (videoFolder, str(id))
+    vid = imageio.get_reader(fname, 'ffmpeg')
+    fps = int(math.floor(vid.get_meta_data()['fps']))
+    dur = int(math.floor(vid.get_meta_data()['duration']))
+
+    for i in range(dur):
+        frame = vid.get_data(i * fps)
+        print('frame %d' %(i))
+        frames.append(frame)
+
+    vid.close()
+
+    # cap = cv2.VideoCapture(videoFolder + "/"+id+".mp4")
+    # frameRate = cap.get(5) #frame rate
+    # while(cap.isOpened()):
+    #     frameId = cap.get(1) #current frame number
+    #     ret, frame = cap.read()
+    #     if (ret != True):
+    #         break
+    #     if (frameId % math.floor(frameRate) == 0):
+    #         frames.append(frame)
+    # cap.release()
 
     return frames
