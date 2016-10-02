@@ -4,6 +4,7 @@ var urlFormInputId = '#tt-url-form-input';
 var videoIFrameId = '#tt-video-iframe';
 var labelsListId = '#tt-labels-list';
 var initialVideoURL = 'https://www.youtube.com/watch?v=YbcxU1IK7s4';
+var availableListId = '#tt-available-list'
 
 function setVideoTime(seconds) {
     var iframe = $(videoIFrameId);
@@ -23,12 +24,31 @@ function secondsToHms(d) {
     return ((h > 0 ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (s < 10 ? "0" : "") + s);
 }
 
+function loadVideo(id) {
+    var urlFormInput = $(urlFormInputId);
+    urlFormInput.val('http://youtu.be/' + id);
+    urlFormInput.submit();
+}
+
 $(document).ready(function() {
 
-    var urlForm = $("#tt-url-form");
-    var urlFormInput = $('#tt-url-form-input');
-    var videoIFrame = $('#tt-video-iframe');
-    var labelsList = $('#tt-labels-list');
+    var urlForm = $(urlFormId);
+    var urlFormInput = $(urlFormInputId);
+    var videoIFrame = $(videoIFrameId);
+    var labelsList = $(labelsListId);
+    var availableList = $(availableListId)
+
+    // Ask for cached section stuff
+    axios.get('/cached')
+        .then(function (response) {
+            var thumbs = response.data.map(function(id) {
+               return '<div class="col-md-2"><a onclick="loadVideo(\'' + id + '\')"'
+                 + 'href="javascript:void(0)"> '
+                 + '<img src="http://img.youtube.com/vi/' + id + '/1.jpg" '
+                 + 'height="90" width="120"> </a> </div>';
+            }).join('');
+            availableList.html(thumbs)
+        });
 
     // Set up submit Handler
     urlForm.submit(function urlFormSubmit(event) {
