@@ -1,6 +1,6 @@
 # tensortube
 
-Volhacks 2016 Project
+Volhacks 2016 Project by Douglas Aaser, Jeremy Anantharaj, Grant Bruer, Alex Klibisz
 
 ## Functionality
 
@@ -9,14 +9,26 @@ Volhacks 2016 Project
 3. Our server passes each frame through a TensorFlow neural network to label the frames.
 4. The user receives the **highest**-confidence labels and can jump to those points in the video.
 
-## Development
+## How does it work?
 
-We tried doing a neat virtual environment, but it wouldn't play nicely with monsters like opencv and tensorflow. So you'll need to run the script install-packages.sh.
+TensorTube is a fairly simple combination of video processing and a single neural network implemented in python.
+
+We take the youtube URL you give us, download a low-res copy of that video, and chop it up into 1-second frames. Then we feed each one of those frames through a [TensorFlow deep neural network](https://github.com/alexklibisz/tensortube) trained on the [ImageNet dataset](http://imagenet.stanford.edu/).
+
+Our server isn't the beefiest, so if your're video is slow to be labeled, you can follow the development instructions to run TensorTube on your own laptop.
+
+## Development Instructions
+
+We tried doing a neat virtual environment, but it wouldn't play nicely with monsters like opencv and tensorflow. It's unrefined, but you'll need to make sure you have pip installed and then run the script install-packages.sh:
 
 > $ wget https://bootstrap.pypa.io/get-pip.py && sudo python2.7 get-pip.py
 > $ ./install-packages.sh
 
-## Deployment
+After that you should be able to run the `server/main.py` script and open up the app on `localhost:5000`:
+
+> $ ./server/main.py
+
+## Deployment on AWS
 
 1. Buy a domain name on namecheap.
 2. Launch an ubuntu 14.04 ec2 on AWS and ssh into it.
