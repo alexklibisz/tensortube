@@ -13,8 +13,15 @@ Volhacks 2016 Project
 
 We tried doing a neat virtual environment, but it wouldn't play nicely with monsters like opencv and tensorflow. So you'll need to run the script install-packages.sh.
 
+> $ sudo apt-get install pip # Install pip if you don't have it.
+> $ ./install-packages.sh
 
-## Virtual Environment
+## Hosting
+
+- [This was a nice reference for setting up the AWS/Namecheap domain name.](http://techgenix.com/namecheap-aws-ec2-linux/)
+
+
+## Virtual Environment (Non-working)
 
 1. Install python virtualenv.
 > $ sudo pip2.7 install virtualenv
@@ -34,8 +41,3 @@ We tried doing a neat virtual environment, but it wouldn't play nicely with mons
 
 6. After installing new packages, freeze them to the requirements.txt file.
 > $ pip freeze > requirements.txt
-
-## Hosting
-
-- [This was a nice reference for setting up the AWS/Namecheap domain name.](http://techgenix.com/namecheap-aws-ec2-linux/)
-- [Used this guide to get flask running on AWS EC2 instance](http://flask.pocoo.org/docs/0.11/deploying/mod_wsgi/#mod-wsgi-apache)
