@@ -15,7 +15,7 @@ TensorTube is a fairly simple combination of video processing and a single neura
 
 We take the youtube URL you give us, download a low-res copy of that video, and chop it up into 1-second frames. Then we feed each one of those frames through a [TensorFlow deep neural network](https://github.com/alexklibisz/tensortube) trained on the [ImageNet dataset](http://imagenet.stanford.edu/). The neural network labels each frame with several labels with varying confidence each. We pick the highest confidence labels and send them back to the web app so the user can jump to frames of the video based on the labels.
 
-Our server isn't the beefiest, so if your're video is slow to be labeled, you can follow the development instructions to run TensorTube on your own laptop.
+Our server isn't the beefiest, so if yourr video is slow to be labeled, you can follow the development instructions to run TensorTube on your own laptop.
 
 ## Development Instructions
 
