@@ -21,6 +21,7 @@ app._static_folder = '../client'
 # Creates classification network and node ID --> English string lookup.
 node_lookup = classifier.NodeLookup()
 videoFolder = './server/videos'
+createdGraph = False
 
 # Routes
 @app.route('/')
@@ -55,11 +56,16 @@ def json_handler():
         print("Didn't find %s in JSON cache: %s" % (filename, str(sys.exc_info())) )
         print (reqData['url'])
         frames = downloader.extract_files(reqData['url'])
-        print ("%d frame%s" % (len(frames), 's' if len(frames) > 1 else ''))
+        print ("%d frame%s" % (len(frames), '' if len(frames) == 1 else 's'))
 
         resData = {"labels" : {}}
 
-        classifier.create_graph()
+        global createdGraph
+        if not createdGraph:
+            print("Creating graph for the first time")
+            classifier.create_graph()
+            createdGraph = True
+
         # Add important frames to resData
         for t, f in enumerate(frames):
             img_str = cv2.imencode('.jpg', f)[1].tostring()
