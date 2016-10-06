@@ -1,7 +1,6 @@
 #!/usr/bin/env python2.7
 from pytube import YouTube
 import math
-import cv2
 import imageio
 
 def get_youtube_id(url):

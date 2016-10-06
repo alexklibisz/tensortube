@@ -4,12 +4,12 @@ import json
 from flask import Flask, request, redirect, url_for, send_from_directory
 import downloader
 import classifier
-import cv2
 import numpy as np
 import sys
 import os
 import glob
 import random
+import imageio
 
 # Setup Flask app.
 app = Flask(__name__)
@@ -68,7 +68,7 @@ def json_handler():
 
         # Add important frames to resData
         for t, f in enumerate(frames):
-            img_str = cv2.imencode('.jpg', f)[1].tostring()
+            img_str = imageio.imwrite(imageio.RETURN_BYTES, f, format="jpg")
             top_predictions, all_predictions = classifier.get_top_predictions_jpg_data(img_str, 1)
 
             for node_id in top_predictions:
