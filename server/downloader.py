@@ -26,11 +26,11 @@ def extract_files(url):
     frames = []
     fname = "%s/%s.mp4" % (videoFolder, str(id))
     vid = imageio.get_reader(fname, 'ffmpeg')
-    fps = int(math.floor(vid.get_meta_data()['fps']))
+    fps = vid.get_meta_data()['fps']
     dur = int(math.floor(vid.get_meta_data()['duration']))
-
+    
     for i in range(dur):
-        frame = vid.get_data(i * fps)
+        frame = vid.get_data(int(math.floor(i*fps)))
         print('frame %d' %(i))
         frames.append(frame)
 
